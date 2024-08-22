@@ -1,31 +1,29 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_CMD = "/usr/local/bin/docker"
+    }
+
     stages {
         stage('Build') {
             steps {
                 script {
-                    docker.build('flask-app')
+                    sh "${DOCKER_CMD} build -t flask-app ."
                 }
             }
         }
         stage('Test') {
             steps {
                 script {
-                    docker.image('flask-app').inside {
-                        sh 'echo Running tests'
-                        sh 'python -m unittest discover -s tests'
-                    }
+                    sh "${DOCKER_CMD} inspect -f . flask-app"
                 }
             }
         }
         stage('Lint') {
             steps {
                 script {
-                    docker.image('flask-app').inside {
-                        sh 'echo Running linter'
-                        sh 'flake8 .'
-                    }
+                    sh "${DOCKER_CMD} run flask-app flake8 ."
                 }
             }
         }
