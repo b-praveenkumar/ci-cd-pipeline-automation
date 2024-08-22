@@ -13,7 +13,7 @@ pipeline {
         stage('Login to AWS ECR') {
             steps {
                 script {
-                    sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com'
+                    sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 390844751355.dkr.ecr.us-east-1.amazonaws.com'
                 }
             }
         }
@@ -21,8 +21,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.tag('flask-app:latest', '<your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest')
-                    docker.push('<your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest')
+                    docker.tag('flask-app:latest', '390844751355.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest')
+                    docker.push('390844751355.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest')
                 }
             }
         }
