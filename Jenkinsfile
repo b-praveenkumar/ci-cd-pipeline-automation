@@ -1,36 +1,37 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_CMD = "/usr/local/bin/docker"
-    }
-
     stages {
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    sh "${DOCKER_CMD} build -t flask-app ."
+                    docker.build('flask-app')
                 }
             }
         }
-        stage('Test') {
+
+        stage('Login to AWS ECR') {
             steps {
                 script {
-                    sh "${DOCKER_CMD} inspect -f . flask-app"
+                    sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com'
                 }
             }
         }
-        stage('Lint') {
+
+        stage('Push Docker Image') {
             steps {
                 script {
-                    sh "${DOCKER_CMD} run flask-app flake8 ."
+                    docker.tag('flask-app:latest', '<your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest')
+                    docker.push('<your-aws-account-id>.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest')
                 }
             }
         }
-        stage('Deploy') {
+
+        stage('Deploy to ECS') {
             steps {
-                echo 'Deploying to cloud...'
-                // Add deployment script here
+                script {
+                    sh 'aws ecs update-service --cluster flask-app-cluster --service flask-app-service --force-new-deployment'
+                }
             }
         }
     }
