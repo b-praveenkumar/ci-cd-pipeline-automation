@@ -18,11 +18,13 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Tag and Push Docker Image') {
             steps {
                 script {
-                    docker.tag('flask-app:latest', '390844751355.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest')
-                    docker.push('390844751355.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest')
+                    sh '''
+                    docker tag flask-app:latest 390844751355.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest
+                    docker push 390844751355.dkr.ecr.us-east-1.amazonaws.com/flask-app:latest
+                    '''
                 }
             }
         }
